@@ -17,6 +17,19 @@ const UrlSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  name: {
+    type: String,
+  },
+  description: {
+    type: String
+  },
+  expiration: {
+    type: Number,
+    validate : {
+      validator : Number.isInteger,
+      message : 'Expiration Time should be epoch time in miliseconds'
+    }
   }
 });
 

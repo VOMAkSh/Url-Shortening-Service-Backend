@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
   urls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Url'
+  }],
+  urlGroups: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'UrlsGroup'
   }]
 });
 

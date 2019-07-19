@@ -22,12 +22,38 @@ Router.post("/add", passport.authenticate('jwt', { session: false }), async (req
       });
     }
     const { shortUrl, shortCode } = generateUrlCode(url);
-    const newUrl = new Url({
-      originalUrl: url,
-      shortCode,
-      shortUrl,
-      userId
-    });
+    let newUrl;
+    if (req.body.expiration) {
+      if (typeof req.body.expiration === "number") {
+        const currentEpochTime = new Date().getTime();
+        if (req.body.expiration > currentEpochTime) {
+          newUrl = new Url({
+            originalUrl: url,
+            shortCode,
+            shortUrl,
+            userId,
+            expiration: req.body.expiration
+          });
+        } else {
+          console.log(typeof req.body.expiration);
+          return res.status(400).json({
+            error: "Invalid Expiration time"
+          })
+        }
+      } else {
+        return res.status(400).json({
+          error: "Expiration time should be epoch time"
+        });
+      }
+    } 
+    else {
+      newUrl = new Url({
+        originalUrl: url,
+        shortCode,
+        shortUrl,
+        userId
+      });
+    }
     await newUrl.save();
     try {
       await User.findOneAndUpdate({ _id: userId }, { $push: { urls: newUrl._id } });
